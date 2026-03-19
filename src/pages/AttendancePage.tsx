@@ -20,8 +20,7 @@ const AttendancePage = () => {
     const dayOffset = dayMap[trainingDay] ?? 3;
 
     return weeks.map(w => {
-      const [d, m, y] = w.startDate.split('.').map(Number);
-      const weekStart = new Date(y, m - 1, d);
+      const weekStart = new Date(w.startDate); // YYYY-MM-DD format
       const date = new Date(weekStart);
       // startDate is Monday (day 0 of week), add offset
       date.setDate(date.getDate() + dayOffset);
