@@ -8,7 +8,7 @@ import hseLogo from '@/assets/hse-logo.png';
 import {
   Home, User, Users, Calendar, BookOpen, CheckSquare,
   BarChart3, ClipboardList, FileText, Bell, LogOut, Menu, X,
-  Sun, Moon, Search, FolderOpen
+  Sun, Moon, FolderOpen
 } from 'lucide-react';
 
 const navItems = [
