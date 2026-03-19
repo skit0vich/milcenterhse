@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { FileText, Download, Upload, Search, FolderOpen, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SUBJECTS } from '@/data/schedule';
+import { useAuth } from '@/contexts/AuthContext';
+import { scheduleData, SUBJECT_FULL_NAMES, SQUADS } from '@/data/schedule';
 
 interface PresentationFile {
   id: string;
@@ -12,26 +13,27 @@ interface PresentationFile {
   author: string;
 }
 
-const subjects = ['Все предметы', ...SUBJECTS];
-
-const initialFiles: PresentationFile[] = [
-  { id: '1', name: 'Основы общей тактики. Лекция 1.pptx', subject: 'Общая тактика', size: '4.2 МБ', date: '15.03.2026', author: 'Майор Козлов Д.С.' },
-  { id: '2', name: 'Виды боевых порядков взвода.pptx', subject: 'Общая тактика', size: '6.1 МБ', date: '12.03.2026', author: 'Майор Козлов Д.С.' },
-  { id: '3', name: 'Действия взвода в обороне.pptx', subject: 'Общая тактика', size: '5.3 МБ', date: '08.03.2026', author: 'Майор Козлов Д.С.' },
-  { id: '4', name: 'Стрелковое оружие ВС РФ.pptx', subject: 'Огневая подготовка', size: '8.5 МБ', date: '10.03.2026', author: 'Капитан Волков И.П.' },
-  { id: '5', name: 'Правила стрельбы из АК-74.pptx', subject: 'Огневая подготовка', size: '3.8 МБ', date: '08.03.2026', author: 'Капитан Волков И.П.' },
-  { id: '6', name: 'Материальная часть гранатомёта РПГ-7.pptx', subject: 'Огневая подготовка', size: '7.2 МБ', date: '01.03.2026', author: 'Капитан Волков И.П.' },
-  { id: '7', name: 'Устав внутренней службы ВС РФ.pptx', subject: 'Общевоинские уставы', size: '3.1 МБ', date: '25.02.2026', author: 'Полковник Смирнов А.В.' },
-  { id: '8', name: 'Дисциплинарный устав ВС РФ.pptx', subject: 'Общевоинские уставы', size: '2.8 МБ', date: '20.02.2026', author: 'Полковник Смирнов А.В.' },
-  { id: '9', name: 'Устав гарнизонной и караульной службы.pptx', subject: 'Общевоинские уставы', size: '4.1 МБ', date: '15.02.2026', author: 'Полковник Смирнов А.В.' },
-];
-
 const MaterialsPage = () => {
-  const [files, setFiles] = useState<PresentationFile[]>(initialFiles);
+  const { user } = useAuth();
+  const squad = user?.squad || SQUADS[0];
+
+  // Get subjects relevant to this squad
+  const squadSubjects = useMemo(() => {
+    const weeks = scheduleData[squad] || [];
+    const subjs = new Set<string>();
+    weeks.forEach(w => Object.values(w.days).flat().forEach(e => subjs.add(e.subject)));
+    // Filter out non-academic entries
+    const nonAcademic = ['Зачёт', 'Экзамен', 'Подготовка', 'Обслуживание', 'Пересдача', 'Подведение итогов'];
+    return Array.from(subjs).filter(s => !nonAcademic.includes(s)).sort();
+  }, [squad]);
+
+  const subjects = ['Все предметы', ...squadSubjects];
+
+  const [files, setFiles] = useState<PresentationFile[]>([]);
   const [selectedSubject, setSelectedSubject] = useState('Все предметы');
   const [search, setSearch] = useState('');
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
-  const [uploadSubject, setUploadSubject] = useState(SUBJECTS[0]);
+  const [uploadSubject, setUploadSubject] = useState(squadSubjects[0] || '');
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -56,7 +58,7 @@ const MaterialsPage = () => {
       subject: uploadSubject,
       size: `${(file.size / (1024 * 1024)).toFixed(1)} МБ`,
       date: new Date().toLocaleDateString('ru-RU'),
-      author: 'Вы',
+      author: user?.name || 'Вы',
     }));
     setFiles(prev => [...newFiles, ...prev]);
     setUploadModalOpen(false);
@@ -73,7 +75,7 @@ const MaterialsPage = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Материалы</h1>
-          <p className="text-muted-foreground text-sm mt-1">Презентации и учебные материалы по предметам</p>
+          <p className="text-muted-foreground text-sm mt-1">Презентации и учебные материалы · Взвод {squad}</p>
         </div>
         <button
           onClick={() => setUploadModalOpen(true)}
@@ -115,7 +117,9 @@ const MaterialsPage = () => {
       {Object.keys(grouped).length === 0 ? (
         <div className="bg-card rounded-2xl border border-border p-12 text-center">
           <FolderOpen className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-          <p className="text-muted-foreground text-sm">Ничего не найдено</p>
+          <p className="text-muted-foreground text-sm">
+            {files.length === 0 ? 'Пока нет загруженных материалов. Нажмите «Загрузить» для добавления.' : 'Ничего не найдено'}
+          </p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -123,7 +127,9 @@ const MaterialsPage = () => {
             <div key={subject} className="bg-card rounded-2xl border border-border overflow-hidden">
               <div className="px-6 py-4 border-b border-border flex items-center gap-2">
                 <FolderOpen className="h-5 w-5 text-primary" />
-                <h2 className="font-semibold text-foreground">{subject}</h2>
+                <h2 className="font-semibold text-foreground">
+                  {SUBJECT_FULL_NAMES[subject] || subject}
+                </h2>
                 <span className="text-xs text-muted-foreground ml-1">({subjectFiles.length})</span>
               </div>
               <div className="divide-y divide-border">
@@ -145,12 +151,6 @@ const MaterialsPage = () => {
                     </div>
                     <button
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 transition-colors opacity-0 group-hover:opacity-100"
-                      onClick={() => {
-                        const a = document.createElement('a');
-                        a.href = '#';
-                        a.download = file.name;
-                        a.click();
-                      }}
                     >
                       <Download className="h-3.5 w-3.5" />
                       Скачать
@@ -193,11 +193,11 @@ const MaterialsPage = () => {
                 <label className="text-sm font-medium text-foreground mb-1.5 block">Предмет</label>
                 <select
                   value={uploadSubject}
-                  onChange={e => setUploadSubject(e.target.value as any)}
+                  onChange={e => setUploadSubject(e.target.value)}
                   className="w-full px-3 py-2.5 rounded-xl bg-surface border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20"
                 >
-                  {SUBJECTS.map(s => (
-                    <option key={s} value={s}>{s}</option>
+                  {squadSubjects.map(s => (
+                    <option key={s} value={s}>{SUBJECT_FULL_NAMES[s] || s}</option>
                   ))}
                 </select>
               </div>

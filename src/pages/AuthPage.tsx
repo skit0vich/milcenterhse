@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion } from 'framer-motion';
-import { SQUADS, Squad } from '@/data/schedule';
+import { SQUADS, getCourse } from '@/data/schedule';
 import milLogo from '@/assets/mil-logo.png';
 import hseLogo from '@/assets/hse-logo.png';
 
@@ -10,8 +10,21 @@ const AuthPage = () => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [name, setName] = useState('');
   const [role, setRole] = useState<'student' | 'teacher'>('student');
-  const [course, setCourse] = useState(1);
-  const [squad, setSquad] = useState<Squad>(SQUADS[0]);
+  const [selectedCourse, setSelectedCourse] = useState(1);
+  const [squad, setSquad] = useState<string>(SQUADS[0]);
+
+  const courseSquads = useMemo(() => {
+    const prefix = selectedCourse === 1 ? '25' : selectedCourse === 2 ? '24' : '23';
+    return SQUADS.filter(s => s.startsWith(prefix));
+  }, [selectedCourse]);
+
+  // Reset squad when course changes
+  const handleCourseChange = (c: number) => {
+    setSelectedCourse(c);
+    const prefix = c === 1 ? '25' : c === 2 ? '24' : '23';
+    const firstSquad = SQUADS.find(s => s.startsWith(prefix));
+    if (firstSquad) setSquad(firstSquad);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +32,7 @@ const AuthPage = () => {
     login({
       name: name || 'Пользователь',
       role,
-      course,
+      course: getCourse(squad),
       squad,
     });
   };
@@ -102,14 +115,14 @@ const AuthPage = () => {
                   <>
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-1.5">Курс</label>
-                      <div className="grid grid-cols-4 gap-2">
-                        {[1, 2, 3, 4].map(c => (
+                      <div className="grid grid-cols-3 gap-2">
+                        {[1, 2, 3].map(c => (
                           <button
                             key={c}
                             type="button"
-                            onClick={() => setCourse(c)}
+                            onClick={() => handleCourseChange(c)}
                             className={`py-2.5 rounded-xl text-sm font-medium border transition-all ${
-                              course === c
+                              selectedCourse === c
                                 ? 'bg-primary text-primary-foreground border-primary'
                                 : 'bg-background text-foreground border-input hover:border-primary/40'
                             }`}
@@ -122,8 +135,8 @@ const AuthPage = () => {
 
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-1.5">Взвод</label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {SQUADS.map(s => (
+                      <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
+                        {courseSquads.map(s => (
                           <button
                             key={s}
                             type="button"
