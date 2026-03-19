@@ -1,15 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, MapPin, Clock, GraduationCap } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, MapPin, GraduationCap } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { scheduleData, getSubjectColor, getSubjectDot, SQUADS, Squad } from '@/data/schedule';
+import { scheduleData, getSubjectColor, getSubjectDot, getSquadDay, SUBJECT_FULL_NAMES, SQUADS } from '@/data/schedule';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SchedulePage = () => {
   const { user } = useAuth();
-  const squad = (user?.squad || SQUADS[0]) as Squad;
+  const squad = user?.squad || SQUADS[0];
   const weeks = scheduleData[squad] || [];
+  const dayName = getSquadDay(squad);
   
-  // Find current week
   const now = new Date();
   const currentWeekIdx = useMemo(() => {
     const idx = weeks.findIndex(w => {
@@ -35,6 +35,15 @@ const SchedulePage = () => {
     ? allEntries
     : allEntries.filter(e => e.subject === filterSubject);
 
+  // Get unique subjects for this squad's schedule
+  const squadSubjects = useMemo(() => {
+    const subjs = new Set<string>();
+    weeks.forEach(w => {
+      Object.values(w.days).flat().forEach(e => subjs.add(e.subject));
+    });
+    return Array.from(subjs).sort();
+  }, [weeks]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -43,7 +52,9 @@ const SchedulePage = () => {
             <Calendar className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-semibold text-foreground">Расписание</h1>
           </div>
-          <p className="text-sm text-muted-foreground mt-1">{squad} · 2-й семестр 2025–2026</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Взвод {squad} · {dayName} · 2-й семестр 2025–2026
+          </p>
         </div>
       </div>
 
@@ -104,7 +115,7 @@ const SchedulePage = () => {
         >
           Все предметы
         </button>
-        {['Огневая подготовка', 'Общевоинские уставы', 'Общая тактика'].map(s => (
+        {squadSubjects.map(s => (
           <button
             key={s}
             onClick={() => setFilterSubject(s)}
@@ -159,21 +170,32 @@ const SchedulePage = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <h3 className="text-sm font-semibold text-foreground">{entry.subject}</h3>
-                        <span className={`inline-block mt-1 px-2 py-0.5 rounded-md text-xs font-medium border ${getSubjectColor(entry.subject)}`}>
-                          {entry.type}
-                        </span>
+                        <h3 className="text-sm font-semibold text-foreground">
+                          {SUBJECT_FULL_NAMES[entry.subject] || entry.subject}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className={`inline-block px-2 py-0.5 rounded-md text-xs font-medium border ${getSubjectColor(entry.subject)}`}>
+                            {entry.subject}
+                          </span>
+                          {entry.type && (
+                            <span className="text-xs text-muted-foreground">{entry.type}</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 mt-2.5 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <GraduationCap className="h-3.5 w-3.5" />
-                        {entry.teacher}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5" />
-                        {entry.room}
-                      </span>
+                    <div className="flex items-center gap-4 mt-2.5 text-xs text-muted-foreground flex-wrap">
+                      {entry.teacher && (
+                        <span className="flex items-center gap-1">
+                          <GraduationCap className="h-3.5 w-3.5" />
+                          {entry.teacher}
+                        </span>
+                      )}
+                      {entry.room && (
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {entry.room}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -189,6 +211,8 @@ const SchedulePage = () => {
         <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
           <span>ГЗ — групповое занятие</span>
           <span>ПЗ — практическое занятие</span>
+          <span>ГУ — групповое упражнение</span>
+          <span>С — семинар</span>
           <span>РК — рубежный контроль</span>
         </div>
       </div>

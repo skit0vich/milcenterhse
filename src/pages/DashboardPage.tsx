@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Calendar, CheckSquare, Bell, Plus, ClipboardList, UserCheck, TrendingUp, TrendingDown, Clock } from 'lucide-react';
-import { scheduleData, getSubjectDot, Squad, SQUADS } from '@/data/schedule';
+import { scheduleData, getSubjectDot, SQUADS } from '@/data/schedule';
 
 const todayTasks = [
   { text: 'Подготовить форму', done: true },
@@ -17,9 +17,8 @@ const notifications = [
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const squad = (user?.squad || SQUADS[0]) as Squad;
+  const squad = user?.squad || SQUADS[0];
 
-  // Get current week's schedule
   const todaySchedule = useMemo(() => {
     const weeks = scheduleData[squad] || [];
     const now = new Date();
@@ -40,7 +39,7 @@ const DashboardPage = () => {
           Добро пожаловать, {user?.name?.split(' ')[0]}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          {user?.squad} · {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
+          Взвод {user?.squad} · {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </div>
 
@@ -82,7 +81,7 @@ const DashboardPage = () => {
                   <div className="h-8 w-0.5 rounded-full bg-border" />
                   <div>
                     <p className="text-sm font-medium text-foreground">{item.subject}</p>
-                    <p className="text-xs text-muted-foreground">{item.teacher} · {item.type}</p>
+                    <p className="text-xs text-muted-foreground">{item.teacher}{item.type ? ` · ${item.type}` : ''}</p>
                   </div>
                 </div>
               ))}
