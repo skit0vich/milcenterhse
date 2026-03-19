@@ -32,8 +32,15 @@ const SchedulePage = () => {
     return Array.from(subjs).sort();
   }, [weeks]);
 
-  const week = weeks[selectedWeek];
-  if (!week) return null;
+  const week = weeks[selectedWeek] || null;
+
+  if (!week) {
+    return (
+      <div className="p-12 text-center text-muted-foreground">
+        Нет данных расписания для взвода {squad}
+      </div>
+    );
+  }
 
   const allEntries = Object.entries(week.days).flatMap(([day, entries]) =>
     entries.map(e => ({ ...e, day }))
