@@ -7,7 +7,8 @@ interface Task {
   title: string;
   assignee: string;
   deadline: string;
-  status: 'planned' | 'progress' | 'done';
+  status: 'unassigned' | 'planned' | 'progress' | 'done';
+  teacher?: string;
 }
 
 const squadMembers = [
@@ -26,9 +27,12 @@ const initialTasks: Task[] = [
   { id: 4, title: 'Инвентаризация формы', assignee: 'Костенко В.О.', deadline: '23.03.2026', status: 'planned' },
   { id: 5, title: 'Подготовка плаца', assignee: 'Пудов И.В.', deadline: '21.03.2026', status: 'progress' },
   { id: 6, title: 'Сдача нормативов', assignee: 'Чинков А.С.', deadline: '18.03.2026', status: 'done' },
+  { id: 7, title: 'Реферат по военной истории', assignee: '', deadline: '25.03.2026', status: 'unassigned', teacher: 'Долгих А.А.' },
+  { id: 8, title: 'Подготовка к зачёту по ОВУ', assignee: '', deadline: '27.03.2026', status: 'unassigned', teacher: 'Ковальчук И.Я.' },
 ];
 
 const columns = [
+  { key: 'unassigned' as const, label: 'Нераспределённые', color: 'bg-rose-500/10 text-rose-600 dark:text-rose-400' },
   { key: 'planned' as const, label: 'Запланировано', color: 'bg-primary/10 text-primary' },
   { key: 'progress' as const, label: 'В процессе', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
   { key: 'done' as const, label: 'Выполнено', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' },
@@ -162,7 +166,7 @@ const TasksPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {columns.map(col => (
           <div
             key={col.key}
@@ -192,14 +196,19 @@ const TasksPage = () => {
                     draggable
                     onDragStart={(e: any) => handleDragStart(e, task)}
                     onDragEnd={(e: any) => handleDragEnd(e)}
-                    className="bg-card rounded-2xl border border-border p-4 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow group"
+                    className={`bg-card rounded-2xl border p-4 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow group ${
+                      task.status === 'unassigned' ? 'border-rose-500/20 border-dashed' : 'border-border'
+                    }`}
                   >
                     <div className="flex items-start gap-2">
                       <GripVertical className="h-4 w-4 text-muted-foreground/40 mt-0.5 flex-shrink-0 group-hover:text-muted-foreground transition-colors" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground mb-2">{task.title}</p>
+                        <p className="text-sm font-medium text-foreground mb-1.5">{task.title}</p>
+                        {task.teacher && (
+                          <p className="text-xs text-muted-foreground mb-1">от: {task.teacher}</p>
+                        )}
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>{task.assignee}</span>
+                          <span>{task.assignee || 'Не назначен'}</span>
                           <span>{task.deadline}</span>
                         </div>
                       </div>
