@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { FileText } from 'lucide-react';
 
 const initialHomework = [
-  { id: 1, subject: 'Тактика', desc: 'Реферат: Действия взвода в обороне', deadline: '25.03.2026', status: 'not_started' },
-  { id: 2, subject: 'Военная история', desc: 'Конспект: Сталинградская битва', deadline: '22.03.2026', status: 'progress' },
-  { id: 3, subject: 'Огневая подготовка', desc: 'Подготовить таблицы стрельбы', deadline: '20.03.2026', status: 'done' },
-  { id: 4, subject: 'РХБЗ', desc: 'Схема оповещения при химической атаке', deadline: '28.03.2026', status: 'not_started' },
-  { id: 5, subject: 'Военная топография', desc: 'Ориентирование по карте (практика)', deadline: '24.03.2026', status: 'progress' },
+  { id: 1, subject: 'Общая тактика', desc: 'Реферат: Действия взвода в обороне', deadline: '25.03.2026', status: 'not_started' },
+  { id: 2, subject: 'Общевоинские уставы', desc: 'Конспект: Устав внутренней службы, глава 3', deadline: '22.03.2026', status: 'progress' },
+  { id: 3, subject: 'Огневая подготовка', desc: 'Подготовить таблицы стрельбы АК-74', deadline: '20.03.2026', status: 'done' },
+  { id: 4, subject: 'Общая тактика', desc: 'Схема организации обороны мотострелкового взвода', deadline: '28.03.2026', status: 'not_started' },
+  { id: 5, subject: 'Огневая подготовка', desc: 'Нормативы по неполной разборке/сборке АК-74', deadline: '24.03.2026', status: 'progress' },
 ];
 
 const statusMap = {

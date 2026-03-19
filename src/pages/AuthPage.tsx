@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion } from 'framer-motion';
+import { SQUADS, Squad } from '@/data/schedule';
 import milLogo from '@/assets/mil-logo.png';
 import hseLogo from '@/assets/hse-logo.png';
 
@@ -10,6 +11,7 @@ const AuthPage = () => {
   const [name, setName] = useState('');
   const [role, setRole] = useState<'student' | 'teacher'>('student');
   const [course, setCourse] = useState(1);
+  const [squad, setSquad] = useState<Squad>(SQUADS[0]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,7 +20,7 @@ const AuthPage = () => {
       name: name || 'Пользователь',
       role,
       course,
-      squad: 'Взвод 1',
+      squad,
     });
   };
 
@@ -63,18 +65,16 @@ const AuthPage = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {mode === 'register' && (
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1.5">Имя</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  placeholder="Иванов Иван Иванович"
-                  className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/30 transition-all"
-                />
-              </div>
-            )}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1.5">Имя</label>
+              <input
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder={mode === 'register' ? 'Иванов Иван Иванович' : 'Введите имя'}
+                className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/30 transition-all"
+              />
+            </div>
 
             {mode === 'register' && (
               <>
@@ -99,41 +99,48 @@ const AuthPage = () => {
                 </div>
 
                 {role === 'student' && (
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1.5">Курс</label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {[1, 2, 3, 4].map(c => (
-                        <button
-                          key={c}
-                          type="button"
-                          onClick={() => setCourse(c)}
-                          className={`py-2.5 rounded-xl text-sm font-medium border transition-all ${
-                            course === c
-                              ? 'bg-primary text-primary-foreground border-primary'
-                              : 'bg-background text-foreground border-input hover:border-primary/40'
-                          }`}
-                        >
-                          {c} курс
-                        </button>
-                      ))}
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1.5">Курс</label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {[1, 2, 3, 4].map(c => (
+                          <button
+                            key={c}
+                            type="button"
+                            onClick={() => setCourse(c)}
+                            className={`py-2.5 rounded-xl text-sm font-medium border transition-all ${
+                              course === c
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'bg-background text-foreground border-input hover:border-primary/40'
+                            }`}
+                          >
+                            {c} курс
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </>
-            )}
 
-            {mode === 'login' && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Имя</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    placeholder="Введите имя"
-                    className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/30 transition-all"
-                  />
-                </div>
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1.5">Взвод</label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {SQUADS.map(s => (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() => setSquad(s)}
+                            className={`py-2.5 rounded-xl text-sm font-medium border transition-all ${
+                              squad === s
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'bg-background text-foreground border-input hover:border-primary/40'
+                            }`}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </>
             )}
 
