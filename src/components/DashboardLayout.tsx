@@ -8,7 +8,7 @@ import hseLogo from '@/assets/hse-logo.png';
 import {
   Home, User, Users, Calendar, BookOpen, CheckSquare,
   BarChart3, ClipboardList, FileText, Bell, LogOut, Menu, X,
-  Sun, Moon, Search
+  Sun, Moon, Search, FolderOpen
 } from 'lucide-react';
 
 const navItems = [
@@ -20,6 +20,7 @@ const navItems = [
   { to: '/attendance', icon: CheckSquare, label: 'Посещаемость' },
   { to: '/tasks', icon: ClipboardList, label: 'Задачи' },
   { to: '/homework', icon: FileText, label: 'Домашние задания' },
+  { to: '/materials', icon: FolderOpen, label: 'Материалы' },
   { to: '/analytics', icon: BarChart3, label: 'Аналитика' },
 ];
 

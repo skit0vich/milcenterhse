@@ -16,6 +16,7 @@ import AttendancePage from "@/pages/AttendancePage";
 import TasksPage from "@/pages/TasksPage";
 import HomeworkPage from "@/pages/HomeworkPage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
+import MaterialsPage from "@/pages/MaterialsPage";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => (
                 <Route path="/tasks" element={<TasksPage />} />
                 <Route path="/homework" element={<HomeworkPage />} />
                 <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/materials" element={<MaterialsPage />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
