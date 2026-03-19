@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { FileText, Download, Upload, Search, FolderOpen, File, X, Plus } from 'lucide-react';
+import { FileText, Download, Upload, Search, FolderOpen, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SUBJECTS } from '@/data/schedule';
 
 interface PresentationFile {
   id: string;
@@ -11,28 +12,18 @@ interface PresentationFile {
   author: string;
 }
 
-const subjects = [
-  'Все предметы',
-  'Тактика',
-  'Огневая подготовка',
-  'Строевая подготовка',
-  'Военная топография',
-  'Общевоинские уставы',
-  'Военная история',
-  'Защита от ОМП',
-];
+const subjects = ['Все предметы', ...SUBJECTS];
 
 const initialFiles: PresentationFile[] = [
-  { id: '1', name: 'Основы тактики. Лекция 1.pptx', subject: 'Тактика', size: '4.2 МБ', date: '15.03.2026', author: 'Майор Козлов Д.С.' },
-  { id: '2', name: 'Виды боевых порядков.pptx', subject: 'Тактика', size: '6.1 МБ', date: '12.03.2026', author: 'Майор Козлов Д.С.' },
-  { id: '3', name: 'Стрелковое оружие РФ.pptx', subject: 'Огневая подготовка', size: '8.5 МБ', date: '10.03.2026', author: 'Капитан Волков И.П.' },
-  { id: '4', name: 'Правила стрельбы из АК-74.pptx', subject: 'Огневая подготовка', size: '3.8 МБ', date: '08.03.2026', author: 'Капитан Волков И.П.' },
-  { id: '5', name: 'Элементы строевой подготовки.pptx', subject: 'Строевая подготовка', size: '2.4 МБ', date: '05.03.2026', author: 'Полковник Смирнов А.В.' },
-  { id: '6', name: 'Топографические карты.pptx', subject: 'Военная топография', size: '12.3 МБ', date: '01.03.2026', author: 'Подполковник Морозов Е.А.' },
-  { id: '7', name: 'Ориентирование на местности.pptx', subject: 'Военная топография', size: '5.7 МБ', date: '28.02.2026', author: 'Подполковник Морозов Е.А.' },
-  { id: '8', name: 'Устав внутренней службы.pptx', subject: 'Общевоинские уставы', size: '3.1 МБ', date: '25.02.2026', author: 'Полковник Смирнов А.В.' },
-  { id: '9', name: 'ВОВ: Основные сражения.pptx', subject: 'Военная история', size: '15.2 МБ', date: '20.02.2026', author: 'Доцент Петров В.Н.' },
-  { id: '10', name: 'Средства индивидуальной защиты.pptx', subject: 'Защита от ОМП', size: '4.9 МБ', date: '18.02.2026', author: 'Капитан Сидоров А.Г.' },
+  { id: '1', name: 'Основы общей тактики. Лекция 1.pptx', subject: 'Общая тактика', size: '4.2 МБ', date: '15.03.2026', author: 'Майор Козлов Д.С.' },
+  { id: '2', name: 'Виды боевых порядков взвода.pptx', subject: 'Общая тактика', size: '6.1 МБ', date: '12.03.2026', author: 'Майор Козлов Д.С.' },
+  { id: '3', name: 'Действия взвода в обороне.pptx', subject: 'Общая тактика', size: '5.3 МБ', date: '08.03.2026', author: 'Майор Козлов Д.С.' },
+  { id: '4', name: 'Стрелковое оружие ВС РФ.pptx', subject: 'Огневая подготовка', size: '8.5 МБ', date: '10.03.2026', author: 'Капитан Волков И.П.' },
+  { id: '5', name: 'Правила стрельбы из АК-74.pptx', subject: 'Огневая подготовка', size: '3.8 МБ', date: '08.03.2026', author: 'Капитан Волков И.П.' },
+  { id: '6', name: 'Материальная часть гранатомёта РПГ-7.pptx', subject: 'Огневая подготовка', size: '7.2 МБ', date: '01.03.2026', author: 'Капитан Волков И.П.' },
+  { id: '7', name: 'Устав внутренней службы ВС РФ.pptx', subject: 'Общевоинские уставы', size: '3.1 МБ', date: '25.02.2026', author: 'Полковник Смирнов А.В.' },
+  { id: '8', name: 'Дисциплинарный устав ВС РФ.pptx', subject: 'Общевоинские уставы', size: '2.8 МБ', date: '20.02.2026', author: 'Полковник Смирнов А.В.' },
+  { id: '9', name: 'Устав гарнизонной и караульной службы.pptx', subject: 'Общевоинские уставы', size: '4.1 МБ', date: '15.02.2026', author: 'Полковник Смирнов А.В.' },
 ];
 
 const MaterialsPage = () => {
@@ -40,7 +31,7 @@ const MaterialsPage = () => {
   const [selectedSubject, setSelectedSubject] = useState('Все предметы');
   const [search, setSearch] = useState('');
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
-  const [uploadSubject, setUploadSubject] = useState(subjects[1]);
+  const [uploadSubject, setUploadSubject] = useState(SUBJECTS[0]);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -93,7 +84,6 @@ const MaterialsPage = () => {
         </button>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -122,7 +112,6 @@ const MaterialsPage = () => {
         </div>
       </div>
 
-      {/* Files grouped by subject */}
       {Object.keys(grouped).length === 0 ? (
         <div className="bg-card rounded-2xl border border-border p-12 text-center">
           <FolderOpen className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
@@ -157,7 +146,6 @@ const MaterialsPage = () => {
                     <button
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 transition-colors opacity-0 group-hover:opacity-100"
                       onClick={() => {
-                        // Mock download
                         const a = document.createElement('a');
                         a.href = '#';
                         a.download = file.name;
@@ -175,7 +163,6 @@ const MaterialsPage = () => {
         </div>
       )}
 
-      {/* Upload Modal */}
       <AnimatePresence>
         {uploadModalOpen && (
           <motion.div
@@ -206,10 +193,10 @@ const MaterialsPage = () => {
                 <label className="text-sm font-medium text-foreground mb-1.5 block">Предмет</label>
                 <select
                   value={uploadSubject}
-                  onChange={e => setUploadSubject(e.target.value)}
+                  onChange={e => setUploadSubject(e.target.value as any)}
                   className="w-full px-3 py-2.5 rounded-xl bg-surface border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20"
                 >
-                  {subjects.filter(s => s !== 'Все предметы').map(s => (
+                  {SUBJECTS.map(s => (
                     <option key={s} value={s}>{s}</option>
                   ))}
                 </select>

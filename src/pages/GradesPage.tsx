@@ -1,22 +1,24 @@
 import React from 'react';
 import { BookOpen } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const subjects = [
-  { name: 'Тактика', grades: [5, 4, 5, 5, 4], exam: 5, avg: 4.6 },
   { name: 'Огневая подготовка', grades: [4, 4, 5, 3, 4], exam: 4, avg: 4.0 },
-  { name: 'Строевая подготовка', grades: [5, 5, 5, 5], exam: 5, avg: 5.0 },
-  { name: 'Военная топография', grades: [4, 5, 4, 5], exam: null, avg: 4.5 },
-  { name: 'РХБЗ', grades: [3, 4, 4, 5], exam: null, avg: 4.0 },
   { name: 'Общевоинские уставы', grades: [5, 4, 5, 4, 5], exam: 5, avg: 4.7 },
-  { name: 'Военная история', grades: [4, 4, 5], exam: null, avg: 4.3 },
+  { name: 'Общая тактика', grades: [5, 4, 5, 5, 4], exam: 5, avg: 4.6 },
 ];
 
 const GradesPage = () => {
+  const { user } = useAuth();
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <BookOpen className="h-6 w-6 text-primary" />
-        <h1 className="text-2xl font-semibold text-foreground">Оценки</h1>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <BookOpen className="h-6 w-6 text-primary" />
+          <h1 className="text-2xl font-semibold text-foreground">Оценки</h1>
+        </div>
+        <span className="text-sm text-muted-foreground">{user?.squad}</span>
       </div>
 
       <div className="bg-card rounded-2xl border border-border overflow-hidden">

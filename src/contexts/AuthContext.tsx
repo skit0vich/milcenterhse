@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { Squad, SQUADS } from '@/data/schedule';
 
 export interface User {
   name: string;
   role: 'student' | 'teacher';
   course: number;
-  squad?: string;
+  squad: Squad;
 }
 
 interface AuthContextType {

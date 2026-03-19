@@ -1,13 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Calendar, CheckSquare, Bell, Plus, ClipboardList, UserCheck, TrendingUp, TrendingDown, Clock } from 'lucide-react';
-
-const todaySchedule = [
-  { time: '08:00', subject: 'Строевая подготовка', teacher: 'Полковник Смирнов А.В.' },
-  { time: '09:30', subject: 'Тактика', teacher: 'Майор Козлов Д.С.' },
-  { time: '11:00', subject: 'Огневая подготовка', teacher: 'Капитан Волков И.П.' },
-  { time: '14:00', subject: 'Военная топография', teacher: 'Подполковник Морозов Е.А.' },
-];
+import { scheduleData, getSubjectDot, Squad, SQUADS } from '@/data/schedule';
 
 const todayTasks = [
   { text: 'Подготовить форму', done: true },
@@ -17,12 +11,27 @@ const todayTasks = [
 
 const notifications = [
   { text: 'Обновлено расписание на пятницу', time: '10 мин' },
-  { text: 'Новое задание: Реферат по ОМП', time: '2 часа' },
-  { text: 'Дедлайн: Отчёт по стрельбам — завтра', time: '5 часов' },
+  { text: 'Новое задание: Реферат по тактике', time: '2 часа' },
+  { text: 'Дедлайн: Конспект по уставам — завтра', time: '5 часов' },
 ];
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const squad = (user?.squad || SQUADS[0]) as Squad;
+
+  // Get current week's schedule
+  const todaySchedule = useMemo(() => {
+    const weeks = scheduleData[squad] || [];
+    const now = new Date();
+    const currentWeek = weeks.find(w => {
+      const start = new Date(w.startDate);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      return now >= start && now <= end;
+    }) || weeks[0];
+    if (!currentWeek) return [];
+    return Object.values(currentWeek.days).flat();
+  }, [squad]);
 
   return (
     <div className="space-y-6">
@@ -30,7 +39,9 @@ const DashboardPage = () => {
         <h1 className="text-2xl font-semibold text-foreground">
           Добро пожаловать, {user?.name?.split(' ')[0]}
         </h1>
-        <p className="text-muted-foreground text-sm mt-1">Обзор на сегодня — {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+        <p className="text-muted-foreground text-sm mt-1">
+          {user?.squad} · {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
+        </p>
       </div>
 
       {/* Stats */}
@@ -39,7 +50,7 @@ const DashboardPage = () => {
           { label: 'Посещаемость', value: '94%', icon: UserCheck, color: 'text-success' },
           { label: 'Поощрения', value: '3', icon: TrendingUp, color: 'text-primary' },
           { label: 'Выговоры', value: '0', icon: TrendingDown, color: 'text-muted-foreground' },
-          { label: 'Средний балл', value: '4.5', icon: TrendingUp, color: 'text-primary' },
+          { label: 'Средний балл', value: '4.4', icon: TrendingUp, color: 'text-primary' },
         ].map((stat, i) => (
           <div key={i} className="bg-card rounded-2xl border border-border p-5 hover-lift cursor-default">
             <div className="flex items-center justify-between mb-3">
@@ -56,20 +67,27 @@ const DashboardPage = () => {
         <div className="lg:col-span-2 bg-card rounded-2xl border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
             <Calendar className="h-5 w-5 text-primary" />
-            <h2 className="font-semibold text-foreground">Расписание на сегодня</h2>
+            <h2 className="font-semibold text-foreground">Расписание на эту неделю</h2>
           </div>
-          <div className="space-y-3">
-            {todaySchedule.map((item, i) => (
-              <div key={i} className="flex items-center gap-4 p-3 rounded-xl hover:bg-surface transition-colors">
-                <div className="text-sm font-mono text-primary font-semibold w-14">{item.time}</div>
-                <div className="h-8 w-1 rounded-full bg-primary/20" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">{item.subject}</p>
-                  <p className="text-xs text-muted-foreground">{item.teacher}</p>
+          {todaySchedule.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-4">Нет занятий на этой неделе</p>
+          ) : (
+            <div className="space-y-3">
+              {todaySchedule.map((item, i) => (
+                <div key={i} className="flex items-center gap-4 p-3 rounded-xl hover:bg-surface transition-colors">
+                  <div className={`h-2.5 w-2.5 rounded-full flex-shrink-0 ${getSubjectDot(item.subject)}`} />
+                  <div className="text-sm font-mono text-primary font-semibold w-28 flex-shrink-0">
+                    {item.time.split(' – ')[0]}
+                  </div>
+                  <div className="h-8 w-0.5 rounded-full bg-border" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{item.subject}</p>
+                    <p className="text-xs text-muted-foreground">{item.teacher} · {item.type}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Tasks */}
