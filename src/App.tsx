@@ -33,35 +33,37 @@ const AuthGate = () => {
   return <AuthPage />;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/auth" element={<AuthGate />} />
-              <Route element={<ProtectedRoute />}>
-                <Route path="/" element={<DashboardPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/squad" element={<SquadPage />} />
-                <Route path="/schedule" element={<SchedulePage />} />
-                <Route path="/grades" element={<GradesPage />} />
-                <Route path="/attendance" element={<AttendancePage />} />
-                <Route path="/tasks" element={<TasksPage />} />
-                <Route path="/homework" element={<HomeworkPage />} />
-                <Route path="/analytics" element={<AnalyticsPage />} />
-                <Route path="/materials" element={<MaterialsPage />} />
-              </Route>
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+        <ThemeProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/auth" element={<AuthGate />} />
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/" element={<DashboardPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/squad" element={<SquadPage />} />
+                  <Route path="/schedule" element={<SchedulePage />} />
+                  <Route path="/grades" element={<GradesPage />} />
+                  <Route path="/attendance" element={<AttendancePage />} />
+                  <Route path="/tasks" element={<TasksPage />} />
+                  <Route path="/homework" element={<HomeworkPage />} />
+                  <Route path="/analytics" element={<AnalyticsPage />} />
+                  <Route path="/materials" element={<MaterialsPage />} />
+                </Route>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </ThemeProvider>
       </AuthProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+};
 
 export default App;
