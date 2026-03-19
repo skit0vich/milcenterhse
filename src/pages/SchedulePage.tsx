@@ -24,6 +24,14 @@ const SchedulePage = () => {
   const [selectedWeek, setSelectedWeek] = useState(currentWeekIdx);
   const [filterSubject, setFilterSubject] = useState<string>('all');
 
+  const squadSubjects = useMemo(() => {
+    const subjs = new Set<string>();
+    weeks.forEach(w => {
+      Object.values(w.days).flat().forEach(e => subjs.add(e.subject));
+    });
+    return Array.from(subjs).sort();
+  }, [weeks]);
+
   const week = weeks[selectedWeek];
   if (!week) return null;
 
@@ -34,15 +42,6 @@ const SchedulePage = () => {
   const filtered = filterSubject === 'all'
     ? allEntries
     : allEntries.filter(e => e.subject === filterSubject);
-
-  // Get unique subjects for this squad's schedule
-  const squadSubjects = useMemo(() => {
-    const subjs = new Set<string>();
-    weeks.forEach(w => {
-      Object.values(w.days).flat().forEach(e => subjs.add(e.subject));
-    });
-    return Array.from(subjs).sort();
-  }, [weeks]);
 
   return (
     <div className="space-y-6">

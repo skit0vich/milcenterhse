@@ -11,7 +11,7 @@ const AuthPage = () => {
   const [name, setName] = useState('');
   const [role, setRole] = useState<'student' | 'teacher'>('student');
   const [selectedCourse, setSelectedCourse] = useState(1);
-  const [squad, setSquad] = useState(SQUADS[0]);
+  const [squad, setSquad] = useState<string>(SQUADS[0]);
 
   const courseSquads = useMemo(() => {
     const prefix = selectedCourse === 1 ? '25' : selectedCourse === 2 ? '24' : '23';
