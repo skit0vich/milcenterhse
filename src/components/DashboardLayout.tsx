@@ -8,7 +8,7 @@ import hseLogo from '@/assets/hse-logo.png';
 import {
   Home, User, Users, Calendar, BookOpen, CheckSquare,
   BarChart3, ClipboardList, FileText, Bell, LogOut, Menu, X,
-  Sun, Moon, Search, FolderOpen
+  Sun, Moon, FolderOpen
 } from 'lucide-react';
 
 const navItems = [
@@ -105,14 +105,6 @@ const DashboardLayout = () => {
             >
               {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
-            <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Поиск..."
-                className="pl-10 pr-4 py-2 rounded-xl bg-surface border border-border text-sm text-foreground w-64 focus:outline-none focus:ring-2 focus:ring-ring/20 transition-all"
-              />
-            </div>
           </div>
 
           <div className="flex items-center gap-3">

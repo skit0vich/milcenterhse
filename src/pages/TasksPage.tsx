@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ClipboardList, Plus, X, Shuffle, Sparkles } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ClipboardList, Plus, X, Shuffle, Sparkles, GripVertical } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Task {
@@ -30,8 +30,8 @@ const initialTasks: Task[] = [
 
 const columns = [
   { key: 'planned' as const, label: 'Запланировано', color: 'bg-primary/10 text-primary' },
-  { key: 'progress' as const, label: 'В процессе', color: 'bg-warning/10 text-warning' },
-  { key: 'done' as const, label: 'Выполнено', color: 'bg-success/10 text-success' },
+  { key: 'progress' as const, label: 'В процессе', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
+  { key: 'done' as const, label: 'Выполнено', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' },
 ];
 
 const TasksPage = () => {
@@ -46,6 +46,46 @@ const TasksPage = () => {
   const [randomTask, setRandomTask] = useState('');
   const [randomResult, setRandomResult] = useState<string | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
+
+  // Drag & drop state
+  const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+  const [dragOverCol, setDragOverCol] = useState<string | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, task: Task) => {
+    setDraggedTask(task);
+    e.dataTransfer.effectAllowed = 'move';
+    // Make the drag image semi-transparent
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '0.5';
+    }
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '1';
+    }
+    setDraggedTask(null);
+    setDragOverCol(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent, colKey: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverCol(colKey);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverCol(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, newStatus: Task['status']) => {
+    e.preventDefault();
+    setDragOverCol(null);
+    if (draggedTask && draggedTask.status !== newStatus) {
+      setTasks(prev => prev.map(t => t.id === draggedTask.id ? { ...t, status: newStatus } : t));
+    }
+    setDraggedTask(null);
+  };
 
   const moveTask = (id: number, newStatus: Task['status']) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
@@ -124,29 +164,57 @@ const TasksPage = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {columns.map(col => (
-          <div key={col.key}>
+          <div
+            key={col.key}
+            onDragOver={e => handleDragOver(e, col.key)}
+            onDragLeave={handleDragLeave}
+            onDrop={e => handleDrop(e, col.key)}
+            className={`rounded-2xl p-3 transition-all duration-200 min-h-[200px] ${
+              dragOverCol === col.key
+                ? 'bg-primary/5 ring-2 ring-primary/30 ring-dashed'
+                : 'bg-transparent'
+            }`}
+          >
             <div className="flex items-center gap-2 mb-3">
               <span className={`text-xs font-medium px-2.5 py-1 rounded-lg ${col.color}`}>{col.label}</span>
               <span className="text-xs text-muted-foreground">{tasks.filter(t => t.status === col.key).length}</span>
             </div>
             <div className="space-y-3">
-              {tasks.filter(t => t.status === col.key).map(task => (
-                <div key={task.id} className="bg-card rounded-2xl border border-border p-4 hover-lift">
-                  <p className="text-sm font-medium text-foreground mb-2">{task.title}</p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{task.assignee}</span>
-                    <span>{task.deadline}</span>
-                  </div>
-                  <div className="flex gap-1 mt-3">
-                    {col.key !== 'planned' && (
-                      <button onClick={() => moveTask(task.id, 'planned')} className="text-xs px-2 py-1 rounded-lg bg-surface text-muted-foreground hover:text-foreground transition-colors">← Назад</button>
-                    )}
-                    {col.key !== 'done' && (
-                      <button onClick={() => moveTask(task.id, col.key === 'planned' ? 'progress' : 'done')} className="text-xs px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">Далее →</button>
-                    )}
-                  </div>
-                </div>
-              ))}
+              <AnimatePresence mode="popLayout">
+                {tasks.filter(t => t.status === col.key).map(task => (
+                  <motion.div
+                    key={task.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                    draggable
+                    onDragStart={(e: any) => handleDragStart(e, task)}
+                    onDragEnd={(e: any) => handleDragEnd(e)}
+                    className="bg-card rounded-2xl border border-border p-4 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow group"
+                  >
+                    <div className="flex items-start gap-2">
+                      <GripVertical className="h-4 w-4 text-muted-foreground/40 mt-0.5 flex-shrink-0 group-hover:text-muted-foreground transition-colors" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground mb-2">{task.title}</p>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>{task.assignee}</span>
+                          <span>{task.deadline}</span>
+                        </div>
+                        <div className="flex gap-1 mt-3">
+                          {col.key !== 'planned' && (
+                            <button onClick={() => moveTask(task.id, 'planned')} className="text-xs px-2 py-1 rounded-lg bg-surface text-muted-foreground hover:text-foreground transition-colors">← Назад</button>
+                          )}
+                          {col.key !== 'done' && (
+                            <button onClick={() => moveTask(task.id, col.key === 'planned' ? 'progress' : 'done')} className="text-xs px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">Далее →</button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
           </div>
         ))}
@@ -174,37 +242,23 @@ const TasksPage = () => {
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-foreground mb-1.5 block">Описание задачи</label>
-                  <input
-                    value={newTitle}
-                    onChange={e => setNewTitle(e.target.value)}
-                    placeholder="Например: Дежурство по взводу"
-                    className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
-                  />
+                  <input value={newTitle} onChange={e => setNewTitle(e.target.value)} placeholder="Например: Дежурство по взводу"
+                    className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/30" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground mb-1.5 block">Ответственный</label>
-                  <select
-                    value={newAssignee}
-                    onChange={e => setNewAssignee(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
-                  >
+                  <select value={newAssignee} onChange={e => setNewAssignee(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/30">
                     {squadMembers.map(m => <option key={m} value={m}>{m}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground mb-1.5 block">Срок</label>
-                  <input
-                    type="date"
-                    value={newDeadline}
-                    onChange={e => setNewDeadline(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
-                  />
+                  <input type="date" value={newDeadline} onChange={e => setNewDeadline(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/30" />
                 </div>
-                <button
-                  onClick={addTask}
-                  disabled={!newTitle.trim()}
-                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-all disabled:opacity-40"
-                >
+                <button onClick={addTask} disabled={!newTitle.trim()}
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-all disabled:opacity-40">
                   Добавить задачу
                 </button>
               </div>
@@ -235,46 +289,30 @@ const TasksPage = () => {
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-foreground mb-1.5 block">Задача</label>
-                  <input
-                    value={randomTask}
-                    onChange={e => setRandomTask(e.target.value)}
-                    placeholder="Что нужно сделать?"
-                    className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
-                  />
+                  <input value={randomTask} onChange={e => setRandomTask(e.target.value)} placeholder="Что нужно сделать?"
+                    className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/30" />
                 </div>
-
                 <div className="bg-surface rounded-2xl p-6 text-center">
                   <Sparkles className="h-8 w-8 text-amber-500 mx-auto mb-3" />
                   {randomResult ? (
-                    <motion.p
-                      key={randomResult}
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      className={`text-xl font-bold text-foreground ${isSpinning ? 'text-muted-foreground' : 'text-primary'}`}
-                    >
+                    <motion.p key={randomResult} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                      className={`text-xl font-bold ${isSpinning ? 'text-muted-foreground' : 'text-primary'}`}>
                       {randomResult}
                     </motion.p>
                   ) : (
                     <p className="text-sm text-muted-foreground">Нажмите кнопку для выбора</p>
                   )}
                 </div>
-
-                <button
-                  onClick={pickRandom}
-                  disabled={isSpinning}
-                  className="w-full py-3 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium text-sm hover:bg-amber-500/20 transition-all disabled:opacity-40"
-                >
+                <button onClick={pickRandom} disabled={isSpinning}
+                  className="w-full py-3 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium text-sm hover:bg-amber-500/20 transition-all disabled:opacity-40">
                   <span className="flex items-center justify-center gap-2">
                     <Shuffle className={`h-4 w-4 ${isSpinning ? 'animate-spin' : ''}`} />
                     {isSpinning ? 'Выбираем...' : 'Крутить рулетку'}
                   </span>
                 </button>
-
                 {randomResult && !isSpinning && randomTask.trim() && (
-                  <button
-                    onClick={assignRandom}
-                    className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-all"
-                  >
+                  <button onClick={assignRandom}
+                    className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-all">
                     Назначить {randomResult.split(' ')[0]}
                   </button>
                 )}

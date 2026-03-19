@@ -4,32 +4,31 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { scheduleData, SUBJECT_FULL_NAMES, SQUADS } from '@/data/schedule';
 
-interface PresentationFile {
+interface MaterialFile {
   id: string;
   name: string;
   subject: string;
   size: string;
   date: string;
   author: string;
+  url?: string; // blob URL for uploaded files
 }
 
 const MaterialsPage = () => {
   const { user } = useAuth();
   const squad = user?.squad || SQUADS[0];
 
-  // Get subjects relevant to this squad
   const squadSubjects = useMemo(() => {
     const weeks = scheduleData[squad] || [];
     const subjs = new Set<string>();
     weeks.forEach(w => Object.values(w.days).flat().forEach(e => subjs.add(e.subject)));
-    // Filter out non-academic entries
     const nonAcademic = ['Зачёт', 'Экзамен', 'Подготовка', 'Обслуживание', 'Пересдача', 'Подведение итогов'];
     return Array.from(subjs).filter(s => !nonAcademic.includes(s)).sort();
   }, [squad]);
 
   const subjects = ['Все предметы', ...squadSubjects];
 
-  const [files, setFiles] = useState<PresentationFile[]>([]);
+  const [files, setFiles] = useState<MaterialFile[]>([]);
   const [selectedSubject, setSelectedSubject] = useState('Все предметы');
   const [search, setSearch] = useState('');
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
@@ -44,7 +43,7 @@ const MaterialsPage = () => {
     return matchSubject && matchSearch;
   });
 
-  const grouped = filtered.reduce<Record<string, PresentationFile[]>>((acc, f) => {
+  const grouped = filtered.reduce<Record<string, MaterialFile[]>>((acc, f) => {
     if (!acc[f.subject]) acc[f.subject] = [];
     acc[f.subject].push(f);
     return acc;
@@ -52,16 +51,27 @@ const MaterialsPage = () => {
 
   const handleFileUpload = (fileList: FileList | null) => {
     if (!fileList) return;
-    const newFiles: PresentationFile[] = Array.from(fileList).map((file, i) => ({
+    const newFiles: MaterialFile[] = Array.from(fileList).map((file, i) => ({
       id: `upload-${Date.now()}-${i}`,
       name: file.name,
       subject: uploadSubject,
       size: `${(file.size / (1024 * 1024)).toFixed(1)} МБ`,
       date: new Date().toLocaleDateString('ru-RU'),
       author: user?.name || 'Вы',
+      url: URL.createObjectURL(file),
     }));
     setFiles(prev => [...newFiles, ...prev]);
     setUploadModalOpen(false);
+  };
+
+  const handleDownload = (file: MaterialFile) => {
+    if (!file.url) return;
+    const a = document.createElement('a');
+    a.href = file.url;
+    a.download = file.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -150,6 +160,7 @@ const MaterialsPage = () => {
                       </p>
                     </div>
                     <button
+                      onClick={() => handleDownload(file)}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <Download className="h-3.5 w-3.5" />
