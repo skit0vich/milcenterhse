@@ -181,7 +181,7 @@ const DashboardLayout = () => {
       </AnimatePresence>
 
       {/* Main content */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 md:${sidebarOpen ? 'ml-64' : 'ml-[72px]'} pb-16 md:pb-0`}>
+      <div className={`flex-1 flex flex-col transition-all duration-300 pb-16 md:pb-0 ${sidebarOpen ? 'md:ml-64' : 'md:ml-[72px]'}`}>
         {/* Header */}
         <header className="h-14 md:h-16 bg-card border-b border-border flex items-center justify-between px-4 md:px-6 sticky top-0 z-20">
           <div className="flex items-center gap-3">
