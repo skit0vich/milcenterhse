@@ -202,14 +202,6 @@ const TasksPage = () => {
                           <span>{task.assignee}</span>
                           <span>{task.deadline}</span>
                         </div>
-                        <div className="flex gap-1 mt-3">
-                          {col.key !== 'planned' && (
-                            <button onClick={() => moveTask(task.id, 'planned')} className="text-xs px-2 py-1 rounded-lg bg-surface text-muted-foreground hover:text-foreground transition-colors">← Назад</button>
-                          )}
-                          {col.key !== 'done' && (
-                            <button onClick={() => moveTask(task.id, col.key === 'planned' ? 'progress' : 'done')} className="text-xs px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">Далее →</button>
-                          )}
-                        </div>
                       </div>
                     </div>
                   </motion.div>
