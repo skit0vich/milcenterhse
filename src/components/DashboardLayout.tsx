@@ -20,6 +20,7 @@ const navItems = [
   { to: '/attendance', icon: CheckSquare, label: 'Посещаемость' },
   { to: '/tasks', icon: ClipboardList, label: 'Задачи' },
   { to: '/homework', icon: FileText, label: 'Домашние задания' },
+  { to: '/materials', icon: FolderOpen, label: 'Материалы' },
   { to: '/analytics', icon: BarChart3, label: 'Аналитика' },
 ];
 
