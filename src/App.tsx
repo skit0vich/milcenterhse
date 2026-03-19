@@ -16,6 +16,7 @@ import AttendancePage from "@/pages/AttendancePage";
 import TasksPage from "@/pages/TasksPage";
 import HomeworkPage from "@/pages/HomeworkPage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
+import MaterialsPage from "@/pages/MaterialsPage";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
