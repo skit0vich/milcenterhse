@@ -7,7 +7,8 @@ interface Task {
   title: string;
   assignee: string;
   deadline: string;
-  status: 'planned' | 'progress' | 'done';
+  status: 'unassigned' | 'planned' | 'progress' | 'done';
+  teacher?: string;
 }
 
 const squadMembers = [
@@ -26,9 +27,12 @@ const initialTasks: Task[] = [
   { id: 4, title: 'Инвентаризация формы', assignee: 'Костенко В.О.', deadline: '23.03.2026', status: 'planned' },
   { id: 5, title: 'Подготовка плаца', assignee: 'Пудов И.В.', deadline: '21.03.2026', status: 'progress' },
   { id: 6, title: 'Сдача нормативов', assignee: 'Чинков А.С.', deadline: '18.03.2026', status: 'done' },
+  { id: 7, title: 'Реферат по военной истории', assignee: '', deadline: '25.03.2026', status: 'unassigned', teacher: 'Долгих А.А.' },
+  { id: 8, title: 'Подготовка к зачёту по ОВУ', assignee: '', deadline: '27.03.2026', status: 'unassigned', teacher: 'Ковальчук И.Я.' },
 ];
 
 const columns = [
+  { key: 'unassigned' as const, label: 'Нераспределённые', color: 'bg-rose-500/10 text-rose-600 dark:text-rose-400' },
   { key: 'planned' as const, label: 'Запланировано', color: 'bg-primary/10 text-primary' },
   { key: 'progress' as const, label: 'В процессе', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
   { key: 'done' as const, label: 'Выполнено', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' },
