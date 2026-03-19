@@ -189,7 +189,9 @@ const TasksPage = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                  >
+                    draggable
+                    onDragStart={(e: any) => handleDragStart(e, task)}
+                    onDragEnd={(e: any) => handleDragEnd(e)}
                     className="bg-card rounded-2xl border border-border p-4 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow group"
                   >
                     <div className="flex items-start gap-2">
