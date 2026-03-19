@@ -166,7 +166,7 @@ const TasksPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {columns.map(col => (
           <div
             key={col.key}
@@ -196,14 +196,19 @@ const TasksPage = () => {
                     draggable
                     onDragStart={(e: any) => handleDragStart(e, task)}
                     onDragEnd={(e: any) => handleDragEnd(e)}
-                    className="bg-card rounded-2xl border border-border p-4 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow group"
+                    className={`bg-card rounded-2xl border p-4 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow group ${
+                      task.status === 'unassigned' ? 'border-rose-500/20 border-dashed' : 'border-border'
+                    }`}
                   >
                     <div className="flex items-start gap-2">
                       <GripVertical className="h-4 w-4 text-muted-foreground/40 mt-0.5 flex-shrink-0 group-hover:text-muted-foreground transition-colors" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground mb-2">{task.title}</p>
+                        <p className="text-sm font-medium text-foreground mb-1.5">{task.title}</p>
+                        {task.teacher && (
+                          <p className="text-xs text-muted-foreground mb-1">от: {task.teacher}</p>
+                        )}
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>{task.assignee}</span>
+                          <span>{task.assignee || 'Не назначен'}</span>
                           <span>{task.deadline}</span>
                         </div>
                       </div>
