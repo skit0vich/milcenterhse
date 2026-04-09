@@ -33,7 +33,6 @@ const DashboardPage = () => {
     if (!currentWeek) return [];
     return Object.values(currentWeek.days).flat();
   }, [squad, profile?.role]);
-  }, [squad]);
 
   return (
     <div className="space-y-6">
