@@ -18,12 +18,10 @@ const notifications = [
 
 const DashboardPage = () => {
   const { profile } = useAuth();
-
-  if (profile?.role === 'teacher') return <TeacherDashboardPage />;
-
   const squad = profile?.squad || SQUADS[0];
 
   const todaySchedule = useMemo(() => {
+    if (profile?.role === 'teacher') return [];
     const weeks = scheduleData[squad] || [];
     const now = new Date();
     const currentWeek = weeks.find(w => {
@@ -34,6 +32,7 @@ const DashboardPage = () => {
     }) || weeks[0];
     if (!currentWeek) return [];
     return Object.values(currentWeek.days).flat();
+  }, [squad, profile?.role]);
   }, [squad]);
 
   return (
