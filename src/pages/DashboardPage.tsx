@@ -16,8 +16,8 @@ const notifications = [
 ];
 
 const DashboardPage = () => {
-  const { user } = useAuth();
-  const squad = user?.squad || SQUADS[0];
+  const { profile } = useAuth();
+  const squad = profile?.squad || SQUADS[0];
 
   const todaySchedule = useMemo(() => {
     const weeks = scheduleData[squad] || [];
@@ -36,10 +36,10 @@ const DashboardPage = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold text-foreground">
-          Добро пожаловать, {user?.name?.split(' ')[0]}
+          Добро пожаловать, {profile?.first_name}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Взвод {user?.squad} · {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
+          Взвод {profile?.squad} · {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </div>
 

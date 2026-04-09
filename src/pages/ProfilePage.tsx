@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Award, AlertTriangle, ClipboardList, TrendingUp } from 'lucide-react';
 
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { profile } = useAuth();
 
   const duties = [
     { title: 'Дежурный по взводу', date: '25.03.2026', status: 'Запланировано' },
@@ -22,15 +22,15 @@ const ProfilePage = () => {
             </div>
             <h2 className="text-lg font-semibold text-foreground">{user?.name}</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              {user?.role === 'student' ? 'Студент' : 'Преподаватель'}
+              {profile?.role === 'student' ? 'Студент' : 'Преподаватель'}
             </p>
             <div className="flex gap-4 mt-4 text-sm">
               <div className="text-center">
-                <p className="font-semibold text-foreground">{user?.course} курс</p>
+                <p className="font-semibold text-foreground">{profile?.course} курс</p>
                 <p className="text-xs text-muted-foreground">Курс</p>
               </div>
               <div className="text-center">
-                <p className="font-semibold text-foreground">{user?.squad || 'Взвод 1'}</p>
+                <p className="font-semibold text-foreground">{profile?.squad || 'Взвод 1'}</p>
                 <p className="text-xs text-muted-foreground">Взвод</p>
               </div>
             </div>
