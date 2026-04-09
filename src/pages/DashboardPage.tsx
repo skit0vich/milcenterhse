@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import TeacherDashboardPage from '@/pages/teacher/TeacherDashboardPage';
 import { Calendar, CheckSquare, Bell, Plus, ClipboardList, UserCheck, TrendingUp, TrendingDown, Clock } from 'lucide-react';
 import { scheduleData, getSubjectDot, SQUADS } from '@/data/schedule';
 
@@ -17,6 +18,9 @@ const notifications = [
 
 const DashboardPage = () => {
   const { profile } = useAuth();
+
+  if (profile?.role === 'teacher') return <TeacherDashboardPage />;
+
   const squad = profile?.squad || SQUADS[0];
 
   const todaySchedule = useMemo(() => {
