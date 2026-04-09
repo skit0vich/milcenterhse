@@ -18,9 +18,9 @@ const ProfilePage = () => {
         <div className="bg-card rounded-2xl border border-border p-6">
           <div className="flex flex-col items-center text-center">
             <div className="h-20 w-20 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary mb-4">
-              {user?.name?.charAt(0) || 'П'}
+              {profile?.first_name?.charAt(0) || 'П'}
             </div>
-            <h2 className="text-lg font-semibold text-foreground">{user?.name}</h2>
+            <h2 className="text-lg font-semibold text-foreground">{profile?.first_name} {profile?.last_name}</h2>
             <p className="text-sm text-muted-foreground mt-1">
               {profile?.role === 'student' ? 'Студент' : 'Преподаватель'}
             </p>
