@@ -66,7 +66,7 @@ const totalMembers = squadData.otdeleniya.reduce((acc, o) => acc + o.members.len
 
 const SquadPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { profile } = useAuth();
 
   return (
     <div className="space-y-6">
