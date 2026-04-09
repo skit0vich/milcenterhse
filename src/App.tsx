@@ -17,18 +17,25 @@ import TasksPage from "@/pages/TasksPage";
 import HomeworkPage from "@/pages/HomeworkPage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
 import MaterialsPage from "@/pages/MaterialsPage";
+import TeacherDashboardPage from "@/pages/teacher/TeacherDashboardPage";
+import TeacherGradesPage from "@/pages/teacher/TeacherGradesPage";
+import TeacherHomeworkPage from "@/pages/teacher/TeacherHomeworkPage";
+import TeacherMaterialsPage from "@/pages/teacher/TeacherMaterialsPage";
+import TeacherRetakesPage from "@/pages/teacher/TeacherRetakesPage";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 
 const ProtectedRoute = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading, profile } = useAuth();
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-surface"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
   if (!isAuthenticated) return <Navigate to="/auth" replace />;
   return <DashboardLayout />;
 };
 
 const AuthGate = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-surface"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
   if (isAuthenticated) return <Navigate to="/" replace />;
   return <AuthPage />;
 };
@@ -55,6 +62,12 @@ const App = () => {
                   <Route path="/homework" element={<HomeworkPage />} />
                   <Route path="/analytics" element={<AnalyticsPage />} />
                   <Route path="/materials" element={<MaterialsPage />} />
+                  {/* Teacher routes */}
+                  <Route path="/teacher" element={<TeacherDashboardPage />} />
+                  <Route path="/teacher/grades" element={<TeacherGradesPage />} />
+                  <Route path="/teacher/homework" element={<TeacherHomeworkPage />} />
+                  <Route path="/teacher/materials" element={<TeacherMaterialsPage />} />
+                  <Route path="/teacher/retakes" element={<TeacherRetakesPage />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>

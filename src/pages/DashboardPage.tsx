@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import TeacherDashboardPage from '@/pages/teacher/TeacherDashboardPage';
 import { Calendar, CheckSquare, Bell, Plus, ClipboardList, UserCheck, TrendingUp, TrendingDown, Clock } from 'lucide-react';
 import { scheduleData, getSubjectDot, SQUADS } from '@/data/schedule';
 
@@ -16,10 +17,11 @@ const notifications = [
 ];
 
 const DashboardPage = () => {
-  const { user } = useAuth();
-  const squad = user?.squad || SQUADS[0];
+  const { profile } = useAuth();
+  const squad = profile?.squad || SQUADS[0];
 
   const todaySchedule = useMemo(() => {
+    if (profile?.role === 'teacher') return [];
     const weeks = scheduleData[squad] || [];
     const now = new Date();
     const currentWeek = weeks.find(w => {
@@ -30,16 +32,18 @@ const DashboardPage = () => {
     }) || weeks[0];
     if (!currentWeek) return [];
     return Object.values(currentWeek.days).flat();
-  }, [squad]);
+  }, [squad, profile?.role]);
+
+  if (profile?.role === 'teacher') return <TeacherDashboardPage />;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold text-foreground">
-          Добро пожаловать, {user?.name?.split(' ')[0]}
+          Добро пожаловать, {profile?.first_name}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Взвод {user?.squad} · {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
+          Взвод {profile?.squad} · {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </div>
 

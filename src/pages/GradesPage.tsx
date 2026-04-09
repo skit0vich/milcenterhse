@@ -66,7 +66,7 @@ const subjectsData: SubjectGrades[] = [
 ];
 
 const GradesPage = () => {
-  const { user } = useAuth();
+  const { profile } = useAuth();
   const [hoveredGrade, setHoveredGrade] = useState<{ subj: number; grade: number } | null>(null);
 
   const getAvg = (grades: GradeEntry[]) => {
@@ -81,7 +81,7 @@ const GradesPage = () => {
           <BookOpen className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-semibold text-foreground">Оценки</h1>
         </div>
-        <span className="text-sm text-muted-foreground">Взвод {user?.squad}</span>
+        <span className="text-sm text-muted-foreground">Взвод {profile?.squad}</span>
       </div>
 
       <div className="bg-card rounded-2xl border border-border overflow-hidden">

@@ -6,8 +6,8 @@ import { scheduleData, getSquadDay, SQUADS } from '@/data/schedule';
 type Status = 'present' | 'absent' | 'future';
 
 const AttendancePage = () => {
-  const { user } = useAuth();
-  const squad = user?.squad || SQUADS[0];
+  const { profile } = useAuth();
+  const squad = profile?.squad || SQUADS[0];
   const trainingDay = getSquadDay(squad);
   const weeks = scheduleData[squad] || [];
 

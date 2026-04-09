@@ -5,8 +5,8 @@ import { scheduleData, getSubjectColor, getSubjectDot, getSquadDay, SUBJECT_FULL
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SchedulePage = () => {
-  const { user } = useAuth();
-  const squad = user?.squad || SQUADS[0];
+  const { profile } = useAuth();
+  const squad = profile?.squad || SQUADS[0];
   const weeks = scheduleData[squad] || [];
   const dayName = getSquadDay(squad);
   

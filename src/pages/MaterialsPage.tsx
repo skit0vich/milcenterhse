@@ -15,8 +15,8 @@ interface MaterialFile {
 }
 
 const MaterialsPage = () => {
-  const { user } = useAuth();
-  const squad = user?.squad || SQUADS[0];
+  const { profile } = useAuth();
+  const squad = profile?.squad || SQUADS[0];
 
   const squadSubjects = useMemo(() => {
     const weeks = scheduleData[squad] || [];
@@ -57,7 +57,7 @@ const MaterialsPage = () => {
       subject: uploadSubject,
       size: `${(file.size / (1024 * 1024)).toFixed(1)} МБ`,
       date: new Date().toLocaleDateString('ru-RU'),
-      author: user?.name || 'Вы',
+      author: profile ? `${profile.first_name} ${profile.last_name}` : 'Вы',
       url: URL.createObjectURL(file),
     }));
     setFiles(prev => [...newFiles, ...prev]);
