@@ -34,6 +34,8 @@ const DashboardPage = () => {
     return Object.values(currentWeek.days).flat();
   }, [squad, profile?.role]);
 
+  if (profile?.role === 'teacher') return <TeacherDashboardPage />;
+
   return (
     <div className="space-y-6">
       <div>
