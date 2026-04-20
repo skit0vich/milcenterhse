@@ -21,9 +21,6 @@ interface SquadInfo {
   specialRoles: { name: string; assignee: string; icon: React.ElementType; color: string }[];
 }
 
-const squad2502: SquadInfo = {
-} as any;
-
 const squad2501: SquadInfo = {
   commander: { name: 'Кабаков Иван Антонович', role: 'Командир взвода' },
   otdeleniya: [
@@ -67,7 +64,7 @@ const squad2501: SquadInfo = {
   specialRoles: [],
 };
 
-const _placeholder = {
+const squad2502: SquadInfo = {
   commander: { name: 'Петров Сергей Максимович', role: 'Командир взвода' },
   otdeleniya: [
     {
