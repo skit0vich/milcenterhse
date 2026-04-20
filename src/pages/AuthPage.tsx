@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SQUADS, SUBJECTS } from '@/data/schedule';
 import milLogo from '@/assets/mil-logo.png';
@@ -15,7 +16,7 @@ const AVAILABLE_SUBJECTS = [
 ];
 
 const AuthPage = () => {
-  const { login, register, updateProfile } = useAuth();
+  const { login, register, refreshProfile } = useAuth();
   const [step, setStep] = useState<Step>('welcome');
   const [mode, setMode] = useState<'login' | 'register'>('register');
 
@@ -101,21 +102,50 @@ const AuthPage = () => {
       return;
     }
 
-    // Wait a bit for profile to be created by trigger
-    await new Promise(r => setTimeout(r, 1000));
-
-    // Update profile with details
-    if (role === 'student') {
-      await updateProfile({
-        course: selectedCourse,
-        squad: selectedSquad,
-      });
-    } else {
-      await updateProfile({
-        subject: selectedSubject,
-      });
+    // Wait for the auth session and the trigger-created profile
+    let userId: string | null = null;
+    for (let i = 0; i < 20; i++) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) { userId = user.id; break; }
+      await new Promise(r => setTimeout(r, 200));
     }
 
+    if (!userId) {
+      setError('Не удалось получить пользователя после регистрации');
+      setSubmitting(false);
+      return;
+    }
+
+    // Wait for profile row to appear (created by handle_new_user trigger)
+    let profileExists = false;
+    for (let i = 0; i < 20; i++) {
+      const { data } = await supabase.from('profiles').select('id').eq('user_id', userId).maybeSingle();
+      if (data) { profileExists = true; break; }
+      await new Promise(r => setTimeout(r, 200));
+    }
+
+    if (!profileExists) {
+      setError('Профиль не создан. Попробуйте перезайти.');
+      setSubmitting(false);
+      return;
+    }
+
+    const updates = role === 'student'
+      ? { course: selectedCourse, squad: selectedSquad }
+      : { subject: selectedSubject };
+
+    const { error: updErr } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('user_id', userId);
+
+    if (updErr) {
+      setError(updErr.message);
+      setSubmitting(false);
+      return;
+    }
+
+    await refreshProfile();
     setSubmitting(false);
   };
 
