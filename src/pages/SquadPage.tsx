@@ -15,7 +15,13 @@ interface Otdelenie {
   members: SquadMember[];
 }
 
-const squadData = {
+interface SquadInfo {
+  commander: { name: string; role: string };
+  otdeleniya: Otdelenie[];
+  specialRoles: { name: string; assignee: string; icon: React.ElementType; color: string }[];
+}
+
+const squad2502: SquadInfo = {
   commander: { name: 'Петров Сергей Максимович', role: 'Командир взвода' },
   otdeleniya: [
     {
@@ -62,11 +68,60 @@ const squadData = {
   ],
 };
 
-const totalMembers = squadData.otdeleniya.reduce((acc, o) => acc + o.members.length, 0) + 1;
+const squad2503: SquadInfo = {
+  commander: { name: 'Зуев Аким Иванович', role: 'Командир взвода' },
+  otdeleniya: [
+    {
+      number: 1,
+      members: [
+        { name: 'Азизов Азим Абдуазизович' },
+        { name: 'Виноградов Илья Валерьевич' },
+        { name: 'Гущин Фёдор Николаевич' },
+        { name: 'Зеленцов Денис Дмитриевич' },
+        { name: 'Платонов Лев Дмитриевич' },
+        { name: 'Сорокин Вадим Андреевич' },
+      ],
+    },
+    {
+      number: 2,
+      members: [
+        { name: 'Шелухин Даниил Дмитриевич', role: 'Зам. командира взвода', roleIcon: Shield, roleColor: 'text-amber-500' },
+        { name: 'Аристархов Дмитрий Владимирович' },
+        { name: 'Гаджимурадов Рамазан Назирович' },
+        { name: 'Ермаков Илья Александрович' },
+        { name: 'Злобин Герман Эдуардович' },
+        { name: 'Мамыкин Владимир Алексеевич' },
+        { name: 'Наседкин Дмитрий Сергеевич' },
+        { name: 'Щелканов Иван Павлович' },
+      ],
+    },
+    {
+      number: 3,
+      members: [
+        { name: 'Баскаков Сергей Дмитриевич' },
+        { name: 'Вьюнов Вячеслав Андреевич' },
+        { name: 'Качаев Дмитрий Сергеевич' },
+        { name: 'Качанов Георгий Игоревич' },
+        { name: 'Корженко Корней Викторович' },
+        { name: 'Сидоренко Илья Антонович' },
+        { name: 'Шишелякин Матвей Романович' },
+      ],
+    },
+  ],
+  specialRoles: [],
+};
+
+const squadsMap: Record<string, SquadInfo> = {
+  '2502': squad2502,
+  '2503': squad2503,
+};
 
 const SquadPage = () => {
   const navigate = useNavigate();
   const { profile } = useAuth();
+  const squadKey = profile?.squad || '2502';
+  const squadData = squadsMap[squadKey] || squad2502;
+  const totalMembers = squadData.otdeleniya.reduce((acc, o) => acc + o.members.length, 0) + 1;
 
   return (
     <div className="space-y-6">
@@ -95,6 +150,7 @@ const SquadPage = () => {
       </div>
 
       {/* Special roles */}
+      {squadData.specialRoles.length > 0 && (
       <div className="bg-card rounded-2xl border border-border p-5">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Специальные роли</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -111,6 +167,7 @@ const SquadPage = () => {
           ))}
         </div>
       </div>
+      )}
 
       {/* Otdeleniya */}
       <div className="space-y-4">
