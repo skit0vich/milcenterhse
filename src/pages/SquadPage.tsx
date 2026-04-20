@@ -112,6 +112,7 @@ const squad2503: SquadInfo = {
 };
 
 const squadsMap: Record<string, SquadInfo> = {
+  '2501': squad2501,
   '2502': squad2502,
   '2503': squad2503,
 };
