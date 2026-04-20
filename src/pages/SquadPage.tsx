@@ -21,6 +21,49 @@ interface SquadInfo {
   specialRoles: { name: string; assignee: string; icon: React.ElementType; color: string }[];
 }
 
+const squad2501: SquadInfo = {
+  commander: { name: 'Кабаков Иван Антонович', role: 'Командир взвода' },
+  otdeleniya: [
+    {
+      number: 1,
+      members: [
+        { name: 'Шахаев Никита Денисович', role: 'Командир отделения', roleIcon: Star, roleColor: 'text-blue-500' },
+        { name: 'Дмитриенко Александр Сергеевич' },
+        { name: 'Немтинов Михаил Михайлович' },
+        { name: 'Попов Лука Ильич' },
+        { name: 'Самигуллин Булат Ренатович' },
+        { name: 'Соловьёв Артём Александрович' },
+      ],
+    },
+    {
+      number: 2,
+      members: [
+        { name: 'Кичеев Михаил Николаевич', role: 'Командир отделения', roleIcon: Star, roleColor: 'text-blue-500' },
+        { name: 'Бродовский Артём Александрович' },
+        { name: 'Голубев Николай Константинович' },
+        { name: 'Пожималин Никита Сергеевич' },
+        { name: 'Солонинкин Артём Алексеевич' },
+        { name: 'Шкуратовский Владислав Юрьевич' },
+        { name: 'Штакан Кирилл Олегович' },
+      ],
+    },
+    {
+      number: 3,
+      members: [
+        { name: 'Баланов Андрей Сергеевич', role: 'Зам. командира взвода', roleIcon: Shield, roleColor: 'text-amber-500' },
+        { name: 'Блах Виктор Денисович', role: 'Командир отделения', roleIcon: Star, roleColor: 'text-blue-500' },
+        { name: 'Первушин Ярослав Дмитриевич' },
+        { name: 'Бутро Егор Александрович' },
+        { name: 'Кутузов Павел Денисович' },
+        { name: 'Погорелов Фёдор Александрович' },
+        { name: 'Теплов Ярослав Игоревич' },
+        { name: 'Алферьев Пётр Дмитриевич' },
+      ],
+    },
+  ],
+  specialRoles: [],
+};
+
 const squad2502: SquadInfo = {
   commander: { name: 'Петров Сергей Максимович', role: 'Командир взвода' },
   otdeleniya: [
@@ -112,6 +155,7 @@ const squad2503: SquadInfo = {
 };
 
 const squadsMap: Record<string, SquadInfo> = {
+  '2501': squad2501,
   '2502': squad2502,
   '2503': squad2503,
 };
